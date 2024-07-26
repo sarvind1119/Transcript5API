@@ -2,7 +2,11 @@
 import streamlit as st
 import google.generativeai as genai
 import tempfile
-genai.configure(api_key='AIzaSyCBgyKZNK-WAuPbF8rWu9_eqJvyUY7By5A')
+import os
+from dotenv import load_dotenv
+load_dotenv()
+GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
+genai.configure(api_key=GOOGLE_API_KEY)
 def transcribe(audio_file, language, format_type):
   your_file = genai.upload_file(path=audio_file)
   prompt = f"Listen carefully to the following audio file in {language}. Provide a complete transcript in {format_type} format."
