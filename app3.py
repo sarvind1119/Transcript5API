@@ -66,7 +66,7 @@ def analyze_sentiment(text):
 # Save results to Excel
 def save_results_to_excel(data):
     today_date = datetime.now().strftime("%m_%d_%y")
-    results_filename = f"Results{today_date}.xlsx"
+    results_filename = f"Results_of_{today_date}.xlsx"
     
     if os.path.exists(results_filename):
         existing_data = pd.read_excel(results_filename)
