@@ -150,6 +150,17 @@ import pandas as pd
 from dotenv import load_dotenv
 from datetime import datetime
 from textblob import TextBlob
+import streamlit as st
+
+hide_streamlit_style = """
+    <style>
+        /* Hide Fork and GitHub icons */
+        [title="Fork this app"], [title="View source on GitHub"] {
+            display: none !important;
+        }
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 load_dotenv()
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
