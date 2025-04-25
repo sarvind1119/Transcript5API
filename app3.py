@@ -426,7 +426,7 @@ def main():
         st.write("This tool lets you upload your audio file(s) and select between transcription or translation. The results are saved in an Excel file.")
         st.header("Developed By")
         st.write("NICTU, LBSNAA for educational and learning purpose")
-        st.image("https://www.lbsnaa.gov.in/images/lbsnaa-logo.png")
+        st.image("https://www.lbsnaa.gov.in/admin_assets/images/logo.png")
         st.header("Share Feedback on")
         st.write("nictu@lbsnaa.gov.in")
 
