@@ -74,7 +74,7 @@ def save_results_to_excel(data, filename):
     return filename
 
 def save_results_to_text(data, filename):
-    with open(filename, 'w') as f:
+    with open(filename, 'w', encoding='utf-8') as f:
         for entry in data:
             f.write(f"Audio File: {entry['Audio File Name']}\n")
             f.write(f"Result: {entry['Transcript/Translation']}\n")
@@ -89,17 +89,17 @@ def save_individual_texts(results):
         for entry in results:
             file_name = entry['Audio File Name'].replace(" ", "_") + ".txt"
             content = f"Transcript/Translation:\n{entry['Transcript/Translation']}\n\nSentiment: {entry['Sentiment']}"
-            with open(file_name, 'w') as f:
+            with open(file_name, 'w', encoding='utf-8') as f:
                 f.write(content)
             zipf.write(file_name)
             os.remove(file_name)
     return zip_filename
 
 def main():
-    st.title("\u23EF Audio Transcription\ud83d\udcdd and Translation\u25b6")
+    st.title("Audio Transcription 📝 and Translation ▶")
 
     with st.sidebar:
-        st.header("About \ud83d\udcc6")
+        st.header("About 📆")
         st.write("Upload audio files or record your voice to transcribe or translate. Results are saved to Excel/Text.")
         st.image("https://www.lbsnaa.gov.in/images/lbsnaa-logo.png")
         st.write("Developed by NICTU, LBSNAA")
