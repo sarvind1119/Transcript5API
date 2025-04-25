@@ -1,6 +1,9 @@
 streamlit
 google-generativeai
-python-dotenv
+pydub
+ffmpeg-python
 textblob
+pandas
 openpyxl
+python-dotenv
 streamlit-audiorecorder
