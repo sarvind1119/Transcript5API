@@ -479,7 +479,7 @@ def main():
         st.header("Share Feedback on")
         st.write("nictu@lbsnaa.gov.in")
 
-    audio_files = st.file_uploader("Upload audio files", accept_multiple_files=True, type=["wav", "mp3", "flac"])
+    audio_files = st.file_uploader("Upload audio files", accept_multiple_files=True, type=["wav", "mp3", "flac","ogg"])
 
     if audio_files:
         format_options = ["Conversation style, accurately identify speakers", "Paragraph", "Bullet points", "Summary"]
