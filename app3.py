@@ -76,7 +76,7 @@ def process_audio(audio_path, format_type, option):
         else:
             prompt = f"Translate the following audio to English in {format_type} format."
 
-        model = genai.GenerativeModel("models/gemini-1.5-flash")
+        model = genai.GenerativeModel("models/gemini-2.5-flash")
         response = model.generate_content(
             [
                 prompt,
