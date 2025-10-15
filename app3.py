@@ -2,8 +2,6 @@
 
 import streamlit as st
 import google.generativeai as genai
-import tempfile
-import time
 import os
 import pandas as pd
 from dotenv import load_dotenv
@@ -30,7 +28,6 @@ def transcribe(audio_file_data, format_type):
     try:
         prompt = f"Act as a speech recognizer expert. Listen carefully to the following audio file. Provide a complete transcript in {format_type} format."
         model = genai.GenerativeModel('gemini-1.5-flash-latest') # Corrected model name
-        # Pass the file data directly
         response = model.generate_content([prompt, audio_file_data])
         return response.text
     except Exception as e:
@@ -42,13 +39,11 @@ def translate(audio_file_data, format_type):
     try:
         prompt = f"Listen carefully to the following audio file. Translate it to English in {format_type} format."
         model = genai.GenerativeModel('gemini-1.5-flash-latest') # Corrected model name
-        # Pass the file data directly
         response = model.generate_content([prompt, audio_file_data])
         return response.text
     except Exception as e:
         st.error(f"An error occurred during translation: {e}")
         return None
-
 
 # Analyze sentiment of text
 def analyze_sentiment(text):
@@ -57,17 +52,15 @@ def analyze_sentiment(text):
     subjectivity = blob.sentiment.subjectivity
 
     # Adjusted thresholds for polarity
-    if polarity > 0.1:  # Lower the positive threshold for milder positivity
+    if polarity > 0.1:
         return "Positive"
-    elif polarity < -0.1:  # Lower the negative threshold to avoid false negatives
+    elif polarity < -0.1:
         return "Negative"
     else:
-        # For very neutral text, use subjectivity to decide
-        if subjectivity < 0.3:  # Highly objective text is usually neutral
+        if subjectivity < 0.3:
             return "Neutral"
         else:
             return "Mixed"
-
 
 # Save results to Excel
 def save_results_to_excel(data):
@@ -88,7 +81,7 @@ def save_results_to_text(data):
     today_date = datetime.now().strftime("%m_%d_%y")
     results_filename = f"Results_of_{today_date}.txt"
 
-    with open(results_filename, 'w', encoding='utf-8') as file: # Added encoding for safety
+    with open(results_filename, 'w', encoding='utf-8') as file:
         for entry in data:
             file.write(f"Audio File Name: {entry['Audio File Name']}\n")
             file.write(f"Transcript/Translation: {entry['Transcript/Translation']}\n")
@@ -102,7 +95,6 @@ def save_results_to_text(data):
 def main():
     st.title("⏯️ Audio Transcription📝 and Translation▶️")
 
-    # Add sidebar
     with st.sidebar:
         st.header("About 📆")
         st.write("This tool lets you upload your audio file(s) and select between transcription or translation. The results are saved in an Excel file.")
@@ -117,7 +109,6 @@ def main():
     if audio_files:
         format_options = ["Conversation style, accurately identify speakers", "Paragraph", "Bullet points", "Summary"]
         selected_format = st.selectbox("Choose output format", format_options)
-
         option = st.selectbox("Choose an option", ["Transcribe", "Translate"])
 
         if st.button("Process"):
@@ -126,7 +117,6 @@ def main():
 
             for idx, audio_file in enumerate(audio_files):
                 try:
-                    # Prepare the file data for the API
                     audio_file_data = {
                         'mime_type': audio_file.type,
                         'data': audio_file.getvalue()
@@ -137,10 +127,8 @@ def main():
                     elif option == "Translate":
                         result_text = translate(audio_file_data, selected_format)
 
-                    # Proceed only if transcription/translation was successful
                     if result_text:
                         sentiment = analyze_sentiment(result_text)
-
                         results_data.append({
                             "Audio File Name": audio_file.name,
                             "Transcript/Translation": result_text,
@@ -153,11 +141,9 @@ def main():
                 except Exception as e:
                     st.error(f"An error occurred with file {audio_file.name}: {e}")
 
-            # Save all results to Excel and text file
             if results_data:
                 saved_excel_file = save_results_to_excel(results_data)
                 saved_text_file = save_results_to_text(results_data)
-
                 st.success(f"Results saved to {saved_excel_file} and {saved_text_file}")
 
                 with open(saved_excel_file, "rb") as file:
