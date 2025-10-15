@@ -26,7 +26,6 @@ GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # Function to process transcription
-# Function to process transcription
 def transcribe(audio_file_data, format_type):
     try:
         prompt = f"Act as a speech recognizer expert. Listen carefully to the following audio file. Provide a complete transcript in {format_type} format."
@@ -49,6 +48,7 @@ def translate(audio_file_data, format_type):
     except Exception as e:
         st.error(f"An error occurred during translation: {e}")
         return None
+
 
 # Analyze sentiment of text
 def analyze_sentiment(text):
@@ -120,40 +120,38 @@ def main():
 
         option = st.selectbox("Choose an option", ["Transcribe", "Translate"])
 
-# --- Inside the main() function ---
+        if st.button("Process"):
+            results_data = []
+            progress_bar = st.progress(0)
 
-            if st.button("Process"):
-                results_data = []
-                progress_bar = st.progress(0)
+            for idx, audio_file in enumerate(audio_files):
+                try:
+                    # Prepare the file data for the API
+                    audio_file_data = {
+                        'mime_type': audio_file.type,
+                        'data': audio_file.getvalue()
+                    }
 
-                for idx, audio_file in enumerate(audio_files):
-                    try:
-                        # Prepare the file data for the API
-                        audio_file_data = {
-                            'mime_type': audio_file.type,
-                            'data': audio_file.getvalue()
-                        }
+                    if option == "Transcribe":
+                        result_text = transcribe(audio_file_data, selected_format)
+                    elif option == "Translate":
+                        result_text = translate(audio_file_data, selected_format)
+                    
+                    # Proceed only if transcription/translation was successful
+                    if result_text:
+                        sentiment = analyze_sentiment(result_text)
 
-                        if option == "Transcribe":
-                            result_text = transcribe(audio_file_data, selected_format)
-                        elif option == "Translate":
-                            result_text = translate(audio_file_data, selected_format)
-                        
-                        # Proceed only if transcription/translation was successful
-                        if result_text:
-                            sentiment = analyze_sentiment(result_text)
+                        results_data.append({
+                            "Audio File Name": audio_file.name,
+                            "Transcript/Translation": result_text,
+                            "Format Chosen": selected_format,
+                            "Sentiment": sentiment
+                        })
 
-                            results_data.append({
-                                "Audio File Name": audio_file.name,
-                                "Transcript/Translation": result_text,
-                                "Format Chosen": selected_format,
-                                "Sentiment": sentiment
-                            })
+                    progress_bar.progress(int(((idx + 1) / len(audio_files)) * 100))
 
-                        progress_bar.progress(int(((idx + 1) / len(audio_files)) * 100))
-
-                    except Exception as e:
-                        st.error(f"An error occurred with file {audio_file.name}: {e}")
+                except Exception as e:
+                    st.error(f"An error occurred with file {audio_file.name}: {e}")
 
             # Save all results to Excel and text file
             if results_data:
