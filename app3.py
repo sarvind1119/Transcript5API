@@ -29,7 +29,7 @@ genai.configure(api_key=GOOGLE_API_KEY)
 def transcribe(audio_file_data, format_type):
     try:
         prompt = f"Act as a speech recognizer expert. Listen carefully to the following audio file. Provide a complete transcript in {format_type} format."
-        model = genai.GenerativeModel('models/gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-1.5-flash-latest') # Corrected model name
         # Pass the file data directly
         response = model.generate_content([prompt, audio_file_data])
         return response.text
@@ -41,7 +41,7 @@ def transcribe(audio_file_data, format_type):
 def translate(audio_file_data, format_type):
     try:
         prompt = f"Listen carefully to the following audio file. Translate it to English in {format_type} format."
-        model = genai.GenerativeModel('models/gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-1.5-flash-latest') # Corrected model name
         # Pass the file data directly
         response = model.generate_content([prompt, audio_file_data])
         return response.text
@@ -73,13 +73,13 @@ def analyze_sentiment(text):
 def save_results_to_excel(data):
     today_date = datetime.now().strftime("%m_%d_%y")
     results_filename = f"Results_of_{today_date}.xlsx"
-    
+
     if os.path.exists(results_filename):
         existing_data = pd.read_excel(results_filename)
         new_data = pd.concat([existing_data, pd.DataFrame(data)], ignore_index=True)
     else:
         new_data = pd.DataFrame(data)
-    
+
     new_data.to_excel(results_filename, index=False)
     return results_filename
 
@@ -87,20 +87,20 @@ def save_results_to_excel(data):
 def save_results_to_text(data):
     today_date = datetime.now().strftime("%m_%d_%y")
     results_filename = f"Results_of_{today_date}.txt"
-    
-    with open(results_filename, 'w') as file:
+
+    with open(results_filename, 'w', encoding='utf-8') as file: # Added encoding for safety
         for entry in data:
             file.write(f"Audio File Name: {entry['Audio File Name']}\n")
             file.write(f"Transcript/Translation: {entry['Transcript/Translation']}\n")
             file.write(f"Format Chosen: {entry['Format Chosen']}\n")
             file.write(f"Sentiment: {entry['Sentiment']}\n")
             file.write("\n" + "-"*50 + "\n\n")
-    
+
     return results_filename
 
 # Main Streamlit app
 def main():
-    st.title("⏯Audio Transcription📝 and Translation▶")
+    st.title("⏯️ Audio Transcription📝 and Translation▶️")
 
     # Add sidebar
     with st.sidebar:
@@ -112,7 +112,7 @@ def main():
         st.header("Share Feedback on")
         st.write("nictu@lbsnaa.gov.in")
 
-    audio_files = st.file_uploader("Upload audio files", accept_multiple_files=True, type=["wav", "mp3", "flac","ogg"])
+    audio_files = st.file_uploader("Upload audio files", accept_multiple_files=True, type=["wav", "mp3", "flac","ogg", "m4a"])
 
     if audio_files:
         format_options = ["Conversation style, accurately identify speakers", "Paragraph", "Bullet points", "Summary"]
@@ -136,7 +136,7 @@ def main():
                         result_text = transcribe(audio_file_data, selected_format)
                     elif option == "Translate":
                         result_text = translate(audio_file_data, selected_format)
-                    
+
                     # Proceed only if transcription/translation was successful
                     if result_text:
                         sentiment = analyze_sentiment(result_text)
@@ -157,12 +157,12 @@ def main():
             if results_data:
                 saved_excel_file = save_results_to_excel(results_data)
                 saved_text_file = save_results_to_text(results_data)
-                
+
                 st.success(f"Results saved to {saved_excel_file} and {saved_text_file}")
 
                 with open(saved_excel_file, "rb") as file:
                     st.download_button("Download Excel Results", file, file_name=saved_excel_file)
-                
+
                 with open(saved_text_file, "rb") as file:
                     st.download_button("Download Text Results", file, file_name=saved_text_file)
 
